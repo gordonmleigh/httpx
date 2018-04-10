@@ -5,6 +5,8 @@ import (
 	"crypto/tls"
 	"net/http"
 	"net/url"
+	"os"
+	"os/signal"
 	"sync"
 	"time"
 
@@ -171,4 +173,14 @@ func ParseServerAddress(addr string) (authority string, tls bool, err error) {
 	}
 
 	return addrURL.Host, tls, nil
+}
+
+// TerminateOnSigint closes the listener when SIGINT (ctrl+c) is received.
+func TerminateOnSigint(l Listener, gracefulTimeout time.Duration) {
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+	go func() {
+		<-interrupt
+		l.Stop(gracefulTimeout)
+	}()
 }
