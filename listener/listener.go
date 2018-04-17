@@ -266,3 +266,12 @@ func makeInterfaceInfo(addr string) (*interfaceInfo, error) {
 
 	return info, nil
 }
+
+func (i *interfaceInfo) String() string {
+	s := "http"
+	if i.tls {
+		s += "s"
+	}
+	s += "://" + i.authority
+	return s
+}
